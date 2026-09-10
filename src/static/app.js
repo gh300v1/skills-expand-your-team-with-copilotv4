@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggle = document.getElementById("theme-toggle");
   const themeToggleLabel = document.getElementById("theme-toggle-label");
   const themeToggleIcon = document.getElementById("theme-toggle-icon");
+  const themeToggleStatus = document.getElementById("theme-toggle-status");
 
   // Activity categories with corresponding colors
   const activityTypes = {
@@ -80,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function applyTheme(theme) {
+  function applyTheme(theme, announceChange = false) {
     currentTheme = theme === "dark" ? "dark" : "light";
     document.body.classList.toggle("dark-mode", currentTheme === "dark");
     if (themeToggleLabel) {
@@ -98,16 +99,26 @@ document.addEventListener("DOMContentLoaded", () => {
           : "Switch to dark mode"
       );
     }
+    if (announceChange && themeToggleStatus) {
+      themeToggleStatus.textContent =
+        currentTheme === "dark" ? "Dark mode enabled." : "Light mode enabled.";
+    }
   }
 
   function initializeTheme() {
     const savedTheme = getStoredItem("themePreference");
-    applyTheme(savedTheme);
+    const preferredTheme =
+      savedTheme ||
+      (window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
+    applyTheme(preferredTheme);
   }
 
   function toggleTheme() {
     const nextTheme = currentTheme === "dark" ? "light" : "dark";
-    applyTheme(nextTheme);
+    applyTheme(nextTheme, true);
     setStoredItem("themePreference", nextTheme);
   }
 
