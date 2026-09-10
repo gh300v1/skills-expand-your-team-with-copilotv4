@@ -475,7 +475,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Build social share links for an activity
   function getSocialShareLinks(name, details) {
     const activityUrl = new URL(window.location.href);
-    activityUrl.hash = `activity=${encodeURIComponent(name)}`;
+    activityUrl.hash = `activity=${name}`;
     const schedule = formatSchedule(details);
     const description = details.description ? `${details.description} ` : "";
     const shareText = `Check out ${name} at Mergington High School! ${description}(${schedule})`;
@@ -640,7 +640,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     shareSection.appendChild(shareButtons);
     const cardActions = activityCard.querySelector(".activity-card-actions");
-    activityCard.insertBefore(shareSection, cardActions);
+    if (cardActions) {
+      activityCard.insertBefore(shareSection, cardActions);
+    } else {
+      activityCard.appendChild(shareSection);
+    }
 
     // Add click handlers for delete buttons
     const deleteButtons = activityCard.querySelectorAll(".delete-participant");
