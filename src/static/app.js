@@ -472,6 +472,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Build social share links for an activity
+  function getSocialShareLinks(name, details) {
+    const activityUrl = window.location.href.split("#")[0];
+    const schedule = formatSchedule(details);
+    const shareText = `Check out ${name} at Mergington High School! ${details.description} (${schedule})`;
+
+    return {
+      x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+        shareText
+      )}&url=${encodeURIComponent(activityUrl)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        activityUrl
+      )}&quote=${encodeURIComponent(shareText)}`,
+      email: `mailto:?subject=${encodeURIComponent(
+        `Join me at ${name}!`
+      )}&body=${encodeURIComponent(`${shareText}\n\n${activityUrl}`)}`,
+    };
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -498,6 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Format the schedule using the new helper function
     const formattedSchedule = formatSchedule(details);
+    const shareLinks = getSocialShareLinks(name, details);
 
     // Create activity tag
     const tagHtml = `
@@ -551,6 +571,36 @@ document.addEventListener("DOMContentLoaded", () => {
             )
             .join("")}
         </ul>
+      </div>
+      <div class="social-share">
+        <span class="social-share-label">Share:</span>
+        <div class="social-share-buttons">
+          <a
+            class="social-share-button"
+            href="${shareLinks.x}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share ${name} on X"
+          >
+            X
+          </a>
+          <a
+            class="social-share-button"
+            href="${shareLinks.facebook}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Share ${name} on Facebook"
+          >
+            Facebook
+          </a>
+          <a
+            class="social-share-button"
+            href="${shareLinks.email}"
+            aria-label="Share ${name} by email"
+          >
+            Email
+          </a>
+        </div>
       </div>
       <div class="activity-card-actions">
         ${
