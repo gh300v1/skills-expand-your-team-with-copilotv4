@@ -55,6 +55,31 @@ document.addEventListener("DOMContentLoaded", () => {
     weekend: { days: ["Saturday", "Sunday"] }, // Weekend days
   };
 
+  function getStoredItem(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error(`Error reading ${key}:`, error);
+      return null;
+    }
+  }
+
+  function setStoredItem(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.error(`Error saving ${key}:`, error);
+    }
+  }
+
+  function removeStoredItem(key) {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error(`Error removing ${key}:`, error);
+    }
+  }
+
   function applyTheme(theme) {
     currentTheme = theme === "dark" ? "dark" : "light";
     document.body.classList.toggle("dark-mode", currentTheme === "dark");
@@ -70,14 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initializeTheme() {
-    const savedTheme = localStorage.getItem("themePreference");
+    const savedTheme = getStoredItem("themePreference");
     applyTheme(savedTheme);
   }
 
   function toggleTheme() {
     const nextTheme = currentTheme === "dark" ? "light" : "dark";
     applyTheme(nextTheme);
-    localStorage.setItem("themePreference", nextTheme);
+    setStoredItem("themePreference", nextTheme);
   }
 
   // Initialize filters from active elements
@@ -129,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Check if user is already logged in (from localStorage)
   function checkAuthentication() {
-    const savedUser = localStorage.getItem("currentUser");
+    const savedUser = getStoredItem("currentUser");
     if (savedUser) {
       try {
         currentUser = JSON.parse(savedUser);
@@ -162,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Session is valid, update user data
       const userData = await response.json();
       currentUser = userData;
-      localStorage.setItem("currentUser", JSON.stringify(userData));
+      setStoredItem("currentUser", JSON.stringify(userData));
       updateAuthUI();
     } catch (error) {
       console.error("Error validating session:", error);
@@ -219,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Login successful
       currentUser = data;
-      localStorage.setItem("currentUser", JSON.stringify(data));
+      setStoredItem("currentUser", JSON.stringify(data));
       updateAuthUI();
       closeLoginModalHandler();
       showMessage(`Welcome, ${currentUser.display_name}!`, "success");
@@ -234,7 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Logout function
   function logout() {
     currentUser = null;
-    localStorage.removeItem("currentUser");
+    removeStoredItem("currentUser");
     updateAuthUI();
     showMessage("You have been logged out.", "info");
   }
