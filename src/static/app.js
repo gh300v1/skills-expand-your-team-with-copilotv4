@@ -473,20 +473,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Build social share links for an activity
-  function escapeHtmlAttribute(value) {
-    return value
-      .replace(/&/g, "&amp;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  }
-
   function getSocialShareLinks(name, details) {
     const activityUrl = new URL(window.location.href);
     activityUrl.hash = `activity=${encodeURIComponent(name)}`;
     const schedule = formatSchedule(details);
-    const shareText = `Check out ${name} at Mergington High School! ${details.description} (${schedule})`;
+    const description = details.description ? `${details.description} ` : "";
+    const shareText = `Check out ${name} at Mergington High School! ${description}(${schedule})`;
 
     return {
       x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
@@ -528,7 +520,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Format the schedule using the new helper function
     const formattedSchedule = formatSchedule(details);
     const shareLinks = getSocialShareLinks(name, details);
-    const safeActivityName = escapeHtmlAttribute(name);
 
     // Create activity tag
     const tagHtml = `
@@ -583,36 +574,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("")}
         </ul>
       </div>
-      <div class="social-share">
-        <span class="social-share-label">Share:</span>
-        <div class="social-share-buttons">
-          <a
-            class="social-share-button"
-            href="${shareLinks.x}"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Share ${safeActivityName} on X"
-          >
-            X
-          </a>
-          <a
-            class="social-share-button"
-            href="${shareLinks.facebook}"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Share ${safeActivityName} on Facebook"
-          >
-            Facebook
-          </a>
-          <a
-            class="social-share-button"
-            href="${shareLinks.email}"
-            aria-label="Share ${safeActivityName} by email"
-          >
-            Email
-          </a>
-        </div>
-      </div>
       <div class="activity-card-actions">
         ${
           currentUser
@@ -631,6 +592,55 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       </div>
     `;
+
+    const shareSection = document.createElement("div");
+    shareSection.className = "social-share";
+
+    const shareLabel = document.createElement("span");
+    shareLabel.className = "social-share-label";
+    shareLabel.textContent = "Share:";
+    shareSection.appendChild(shareLabel);
+
+    const shareButtons = document.createElement("div");
+    shareButtons.className = "social-share-buttons";
+
+    const buttonDefinitions = [
+      {
+        label: "X",
+        ariaLabel: `Share ${name} on X`,
+        href: shareLinks.x,
+        openInNewTab: true,
+      },
+      {
+        label: "Facebook",
+        ariaLabel: `Share ${name} on Facebook`,
+        href: shareLinks.facebook,
+        openInNewTab: true,
+      },
+      {
+        label: "Email",
+        ariaLabel: `Share ${name} by email`,
+        href: shareLinks.email,
+        openInNewTab: false,
+      },
+    ];
+
+    buttonDefinitions.forEach((buttonInfo) => {
+      const link = document.createElement("a");
+      link.className = "social-share-button";
+      link.textContent = buttonInfo.label;
+      link.href = buttonInfo.href;
+      link.ariaLabel = buttonInfo.ariaLabel;
+      if (buttonInfo.openInNewTab) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      shareButtons.appendChild(link);
+    });
+
+    shareSection.appendChild(shareButtons);
+    const cardActions = activityCard.querySelector(".activity-card-actions");
+    activityCard.insertBefore(shareSection, cardActions);
 
     // Add click handlers for delete buttons
     const deleteButtons = activityCard.querySelectorAll(".delete-participant");
