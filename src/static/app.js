@@ -100,8 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
     if (announceChange && themeToggleStatus) {
-      themeToggleStatus.textContent =
-        currentTheme === "dark" ? "Dark mode enabled." : "Light mode enabled.";
+      themeToggleStatus.textContent = "";
+      setTimeout(() => {
+        themeToggleStatus.textContent =
+          currentTheme === "dark"
+            ? "Dark mode enabled."
+            : "Light mode enabled.";
+      }, 0);
     }
   }
 
