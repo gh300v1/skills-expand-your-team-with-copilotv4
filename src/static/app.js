@@ -24,6 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("login-form");
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeToggleLabel = document.getElementById("theme-toggle-label");
+  const themeToggleIcon = document.getElementById("theme-toggle-icon");
+  const themeToggleStatus = document.getElementById("theme-toggle-status");
 
   // Activity categories with corresponding colors
   const activityTypes = {
@@ -43,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication state
   let currentUser = null;
+  let currentTheme = "light";
 
   // Time range mappings for the dropdown
   const timeRanges = {
@@ -50,6 +55,72 @@ document.addEventListener("DOMContentLoaded", () => {
     afternoon: { start: "15:00", end: "18:00" }, // After school hours
     weekend: { days: ["Saturday", "Sunday"] }, // Weekend days
   };
+
+  function getStoredItem(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error(`Error reading ${key}:`, error);
+      return null;
+    }
+  }
+
+  function setStoredItem(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.error(`Error saving ${key}:`, error);
+    }
+  }
+
+  function removeStoredItem(key) {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error(`Error removing ${key}:`, error);
+    }
+  }
+
+  function applyTheme(theme, announceChange = false) {
+    currentTheme = theme === "dark" ? "dark" : "light";
+    document.body.classList.toggle("dark-mode", currentTheme === "dark");
+    if (themeToggleLabel) {
+      themeToggleLabel.textContent =
+        currentTheme === "dark" ? "Light Mode" : "Dark Mode";
+    }
+    if (themeToggleIcon) {
+      themeToggleIcon.textContent = currentTheme === "dark" ? "☀️" : "🌙";
+    }
+    if (themeToggle) {
+      themeToggle.setAttribute(
+        "aria-label",
+        currentTheme === "dark"
+          ? "Switch to light mode"
+          : "Switch to dark mode"
+      );
+    }
+    if (announceChange && themeToggleStatus) {
+      themeToggleStatus.textContent =
+        currentTheme === "dark" ? "Dark mode enabled." : "Light mode enabled.";
+    }
+  }
+
+  function initializeTheme() {
+    const savedTheme = getStoredItem("themePreference");
+    const preferredTheme =
+      savedTheme ||
+      (window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
+    applyTheme(preferredTheme);
+  }
+
+  function toggleTheme() {
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    applyTheme(nextTheme, true);
+    setStoredItem("themePreference", nextTheme);
+  }
 
   // Initialize filters from active elements
   function initializeFilters() {
@@ -100,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Check if user is already logged in (from localStorage)
   function checkAuthentication() {
-    const savedUser = localStorage.getItem("currentUser");
+    const savedUser = getStoredItem("currentUser");
     if (savedUser) {
       try {
         currentUser = JSON.parse(savedUser);
@@ -133,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Session is valid, update user data
       const userData = await response.json();
       currentUser = userData;
-      localStorage.setItem("currentUser", JSON.stringify(userData));
+      setStoredItem("currentUser", JSON.stringify(userData));
       updateAuthUI();
     } catch (error) {
       console.error("Error validating session:", error);
@@ -190,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Login successful
       currentUser = data;
-      localStorage.setItem("currentUser", JSON.stringify(data));
+      setStoredItem("currentUser", JSON.stringify(data));
       updateAuthUI();
       closeLoginModalHandler();
       showMessage(`Welcome, ${currentUser.display_name}!`, "success");
@@ -205,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Logout function
   function logout() {
     currentUser = null;
-    localStorage.removeItem("currentUser");
+    removeStoredItem("currentUser");
     updateAuthUI();
     showMessage("You have been logged out.", "info");
   }
@@ -235,6 +306,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Event listeners for authentication
+  if (themeToggle) {
+    themeToggle.addEventListener("click", toggleTheme);
+  }
   loginButton.addEventListener("click", openLoginModal);
   logoutButton.addEventListener("click", logout);
   closeLoginModal.addEventListener("click", closeLoginModalHandler);
@@ -862,6 +936,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initialize app
+  initializeTheme();
   checkAuthentication();
   initializeFilters();
   fetchActivities();
