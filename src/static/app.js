@@ -473,21 +473,31 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Build social share links for an activity
+  function escapeHtmlAttribute(value) {
+    return value
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
   function getSocialShareLinks(name, details) {
-    const activityUrl = window.location.href.split("#")[0];
+    const activityUrl = new URL(window.location.href);
+    activityUrl.hash = `activity=${encodeURIComponent(name)}`;
     const schedule = formatSchedule(details);
     const shareText = `Check out ${name} at Mergington High School! ${details.description} (${schedule})`;
 
     return {
       x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
         shareText
-      )}&url=${encodeURIComponent(activityUrl)}`,
+      )}&url=${encodeURIComponent(activityUrl.toString())}`,
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        activityUrl
+        activityUrl.toString()
       )}&quote=${encodeURIComponent(shareText)}`,
       email: `mailto:?subject=${encodeURIComponent(
         `Join me at ${name}!`
-      )}&body=${encodeURIComponent(`${shareText}\n\n${activityUrl}`)}`,
+      )}&body=${encodeURIComponent(`${shareText}\n\n${activityUrl.toString()}`)}`,
     };
   }
 
@@ -518,6 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Format the schedule using the new helper function
     const formattedSchedule = formatSchedule(details);
     const shareLinks = getSocialShareLinks(name, details);
+    const safeActivityName = escapeHtmlAttribute(name);
 
     // Create activity tag
     const tagHtml = `
@@ -580,7 +591,7 @@ document.addEventListener("DOMContentLoaded", () => {
             href="${shareLinks.x}"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Share ${name} on X"
+            aria-label="Share ${safeActivityName} on X"
           >
             X
           </a>
@@ -589,14 +600,14 @@ document.addEventListener("DOMContentLoaded", () => {
             href="${shareLinks.facebook}"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Share ${name} on Facebook"
+            aria-label="Share ${safeActivityName} on Facebook"
           >
             Facebook
           </a>
           <a
             class="social-share-button"
             href="${shareLinks.email}"
-            aria-label="Share ${name} by email"
+            aria-label="Share ${safeActivityName} by email"
           >
             Email
           </a>
