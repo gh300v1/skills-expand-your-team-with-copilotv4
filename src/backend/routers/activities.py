@@ -42,7 +42,10 @@ def get_activities(
         query["schedule_details.end_time"] = {"$lte": end_time}
 
     if difficulty == "All Levels":
-        query["difficulty"] = None
+        query["$or"] = [
+            {"difficulty": None},
+            {"difficulty": {"$exists": False}}
+        ]
     elif difficulty:
         query["difficulty"] = difficulty
     
