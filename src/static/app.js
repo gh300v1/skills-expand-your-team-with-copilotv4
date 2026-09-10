@@ -474,22 +474,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Build social share links for an activity
   function getSocialShareLinks(name, details) {
-    const activityUrl = new URL(window.location.href);
-    activityUrl.hash = `activity=${name}`;
+    const baseUrl = window.location.href.split("#")[0];
+    const activityUrl = `${baseUrl}#activity=${encodeURIComponent(name)}`;
     const schedule = formatSchedule(details);
     const description = details.description ? `${details.description} ` : "";
-    const shareText = `Check out ${name} at Mergington High School! ${description}(${schedule})`;
+    const scheduleText = schedule ? ` (${schedule})` : "";
+    const shareText = `Check out ${name} at Mergington High School! ${description}${scheduleText}`;
 
     return {
       x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
         shareText
-      )}&url=${encodeURIComponent(activityUrl.toString())}`,
+      )}&url=${encodeURIComponent(activityUrl)}`,
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        activityUrl.toString()
+        activityUrl
       )}&quote=${encodeURIComponent(shareText)}`,
       email: `mailto:?subject=${encodeURIComponent(
         `Join me at ${name}!`
-      )}&body=${encodeURIComponent(`${shareText}\n\n${activityUrl.toString()}`)}`,
+      )}&body=${encodeURIComponent(`${shareText}\n\n${activityUrl}`)}`,
     };
   }
 
