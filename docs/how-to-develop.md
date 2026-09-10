@@ -61,7 +61,7 @@ These dependencies will be installed when you run `pip install -r src/requiremen
 
 | Method | Endpoint                                                          | Description                                                         |
 | ------ | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
-| GET    | `/activities`                                                     | Get all activities with optional `day`, `start_time`, `end_time`, and `difficulty` (`Beginner`, `Intermediate`, `Advanced`, or `All Levels` for activities without difficulty metadata) filters |
+| GET    | `/activities`                                                     | Get all activities with optional `day`, `start_time`, `end_time`, and `difficulty` (`Beginner`, `Intermediate`, `Advanced`, or `unspecified` for activities without difficulty metadata) filters |
 | POST   | `/activities/{activity_name}/signup?email=student@mergington.edu` | Sign up for an activity                                             |
 
 > [!IMPORTANT]
