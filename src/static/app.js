@@ -474,7 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Build social share links for an activity
   function getSocialShareLinks(name, details) {
-    const baseUrl = window.location.href.split("#")[0];
+    const baseUrl = `${window.location.origin}${window.location.pathname}`;
     const activityUrl = `${baseUrl}#activity=${encodeURIComponent(name)}`;
     const schedule = formatSchedule(details);
     const description = details.description ? `${details.description} ` : "";
@@ -608,13 +608,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const buttonDefinitions = [
       {
         label: "X",
-        ariaLabel: `Share ${name} on X`,
+        ariaLabel: `Share ${name} on X (opens in a new tab)`,
         href: shareLinks.x,
         openInNewTab: true,
       },
       {
         label: "Facebook",
-        ariaLabel: `Share ${name} on Facebook`,
+        ariaLabel: `Share ${name} on Facebook (opens in a new tab)`,
         href: shareLinks.facebook,
         openInNewTab: true,
       },
