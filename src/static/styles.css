@@ -725,11 +725,15 @@ body.dark-mode .tooltip .tooltip-text {
 
 @media (max-width: 767px) {
   header {
-    padding-top: 64px;
+    padding-top: 12px;
   }
 
   #user-controls {
-    right: 12px;
-    max-width: calc(100% - 24px);
+    position: static;
+    order: -1;
+    width: 100%;
+    max-width: none;
+    justify-content: flex-end;
+    margin-bottom: 12px;
   }
 }
